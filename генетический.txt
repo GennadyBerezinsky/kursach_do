@@ -1,0 +1,88 @@
+Вхід:	A - матриця сумісностей
+		n - кількцість тварин
+		s - розмір початкової популяції
+		sp - розмір популяції
+		f - умова завершення(к-ть ітерацій без покращення)
+		p - вектор популяцій
+
+
+Вихід: 	pbest - найкращий вектор-результат
+
+//крок 1. ініціалізація
+sp:=s
+for i:= 1 to sp
+	for j := 1 to n
+		pi[j] := rand(0|1)
+	end
+end
+
+//крок 2. оцінка сумісності
+for i:=1 to sp
+	flag := true
+	for each element in p[i]		
+		for k:= 1 to n
+			if A[j][k] = 0
+				flag := false
+				brake
+			end if
+		end for
+	end for
+	if flag = false
+		remove population member
+end for
+
+counter:=0
+while counter < 10
+
+//крок 3. вибір предків, турнірний метод
+t - вектор номерів команд турніру, дe t[i] номер команді і-того члена популяції
+for i:=1 to sp
+	t[i] := rand(1|2)
+end for
+
+parent1 := max(p where t(p) = 1)
+parent2 := max(p where t(p) = 2)
+
+//крок 4. схрещування, одноточковий кросинговер
+point = n/2
+for i:=1 to point
+	child1[i] = parent1[i]
+	child2[i] = parent2[2]
+end for
+
+for i:=point+1 to n
+	child1[i] = parent2[i]
+	child2[i] = parent1[2]
+end for
+
+
+
+//крок 5. Мутація.
+posibility := 10
+
+if rand(1-100) < 10
+	child1 inverts randome gene
+end if
+
+if rand(1-100) < 10
+	child2 inverts randome gene
+end if
+
+//крок 6. Реанімація.
+	оцінити сумісність нащадків аналогічно кроку 2
+	if not 
+		прибрати тварину, що сумісна не сумісна з найбільшою к-тю інших
+
+//крок 7. включення в популяцію
+оцінити сумісність
+включити сумісні в популяцію
+
+if max(p) > pbest // якщо є популяція краще за поточну
+	pbest := max(p)
+	counter := 0
+else
+	counter := counter + 1
+end if
+
+end while
+
