@@ -1,5 +1,4 @@
 import random
-import string
 
 def getRandomPopulation(stringLength):
     letters = "01"
@@ -33,6 +32,37 @@ def printPopulations(count, startMatrix, populationItem):
     + " C("+ str(count) +") = " 
     + str(countAnimals(populationItem))
     + " " + str(checkIfSatisfy(startMatrix, populationItem)))
+
+def findMaxFromPopulations(firstGroup, secondGroup):
+    maxNumber = 0
+    maxFirstName = ''
+    for element in firstGroup:
+        if countAnimals(element) > maxNumber:
+            maxNumber = countAnimals(element)
+            maxFirstName = element
+
+    maxNumber = 0
+    maxSecondName = ''
+    for element in secondGroup:
+        if countAnimals(element) > maxNumber:
+            maxNumber = countAnimals(element)
+            maxSecondName = element
+
+    return [maxFirstName, maxSecondName]
+
+def crossingOver(parentsList):
+    firstBlockSize = int(len(parentsList[0])/2)
+    secondBlockSize = len(parentsList[0]) - firstBlockSize
+
+    firstFirstPart = parentsList[0][:firstBlockSize]
+    firstSecondPart = parentsList[0][secondBlockSize:]
+    secondFirstPart = parentsList[1][:firstBlockSize]
+    secondSecondPart = parentsList[1][secondBlockSize:]
+
+    parentsList[0] = firstFirstPart + secondSecondPart
+    parentsList[1] = secondFirstPart + firstSecondPart
+
+    return parentsList
 
 startMatrix = [
     [1, 1, 1, 0, 1, 0],
@@ -70,6 +100,32 @@ for count, populationItem in enumerate(populationList, start = 0):
     printPopulations(count + 1, startMatrix, populationItem)
 
 numberOfCandidatesAtFirstGroup = int(len(populationList) / 2)
-print("\nAt first group it will be " + str(numberOfCandidatesAtFirstGroup) + " elements")
-print("At Second group it will be " + str(len(populationList) - numberOfCandidatesAtFirstGroup) + " elements")
-    
+numberOfCandidatesAtSecondGroup = len(populationList) - numberOfCandidatesAtFirstGroup
+
+firstGroup = []
+secondGroup = []
+
+randomList = populationList
+while len(randomList) != 0:
+    randomItem = random.randint(0, len(randomList)-1)
+    if random.randint(0, 1):
+        if len(firstGroup) < numberOfCandidatesAtFirstGroup:
+            firstGroup.append(randomList[randomItem])
+            randomList.remove(randomList[randomItem])
+    else:
+        if len(secondGroup) < numberOfCandidatesAtSecondGroup:
+            secondGroup.append(randomList[randomItem])
+            randomList.remove(randomList[randomItem])
+
+# Delete later
+firstGroup = ['011000', '111000']
+secondGroup = ['010010', '001011']
+
+print("\nFirst group:", firstGroup)
+print("Second group:", secondGroup)
+
+parentsList = findMaxFromPopulations(firstGroup, secondGroup)
+
+print("\nCandidates to parents:", parentsList)
+parentsList = crossingOver(parentsList)
+print("After crossing over:", parentsList)
