@@ -131,14 +131,16 @@ def findMaxFromPopulations(firstGroup, secondGroup):
 def crossingOver(globalCout, parentsList):
     firstBlockSize = random.randint(1, int(len(parentsList[0])/2))
     secondBlockSize = len(parentsList[0]) - firstBlockSize
+    if len(parentsList[0]) % 2 != 0:
+        secondBlockSize -= 1
 
     firstFirstPart = parentsList[0][:firstBlockSize]
     firstSecondPart = parentsList[0][secondBlockSize:]
     secondFirstPart = parentsList[1][:firstBlockSize]
     secondSecondPart = parentsList[1][secondBlockSize:]
 
-    parentsList[0] = str(firstFirstPart) + str(secondSecondPart)
-    parentsList[1] = str(secondFirstPart) + str(firstSecondPart)
+    parentsList[0] = firstFirstPart + secondSecondPart
+    parentsList[1] = secondFirstPart + firstSecondPart
 
     return parentsList
 
