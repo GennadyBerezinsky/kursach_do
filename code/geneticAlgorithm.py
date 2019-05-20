@@ -1,5 +1,12 @@
 import random
 
+def checkMatrix(matrix):
+    for i in range(len(matrix)):
+        for j in range(len(matrix)):
+            if matrix[i][j] != matrix[j][i]:
+                return True
+    return False
+
 def startMenu():
     answerIsCorrect = False
     while answerIsCorrect != True:
@@ -8,23 +15,63 @@ def startMenu():
         try:
             answer = int(input("1. By your own\n2. Random generate\n3. From file\n4. From work example\nYour answer is: "))
             if answer <= 4:
-                answerIsCorrect = True
-        except Exception:
-            print("Incorrect input, try again..")
+                if answer == 1:
+                    matrixSize = int(input("Input matrix size (2 - 10): "))
+                    if (matrixSize < 2 or matrixSize > 10):
+                        raise Exception('Incorrect martix size')
+                    startMatrix = [[0 for j in range(matrixSize)] for i in range(matrixSize)]
+                    for i in range(matrixSize):
+                        for j in range(i, matrixSize):
+                            if i == j:
+                                startMatrix[i][j] = 1
+                                continue
+                            matrixValue = int(input("Enter [" + str(i + 1) + "] [" + str(j + 1) + "]: "))
+                            if matrixValue != 0 and matrixValue != 1:
+                                raise Exception('Incorrect martix value')
+                            startMatrix[i][j] = matrixValue
+                            startMatrix[j][i] = matrixValue
+                
+                if answer == 2:
+                    matrixSize = random.randint(2, 10)
+                    startMatrix = [[0 for j in range(matrixSize)] for i in range(matrixSize)]
+                    for i in range(matrixSize):
+                        for j in range(i, matrixSize):
+                            if i == j:
+                                startMatrix[i][j] = 1
+                                continue
+                            matrixValue = random.randint(0, 1)
+                            startMatrix[i][j] = matrixValue
+                            startMatrix[j][i] = matrixValue
 
-    if answer == 4:
-        startMatrix = [
-            [1, 1, 1, 0, 1, 0],
-            [1, 1, 1, 0, 1, 0],
-            [1, 1, 1, 0, 1, 1],
-            [0, 0, 0, 1, 1, 0],
-            [1, 1, 1, 1, 1, 1],
-            [0, 0, 1, 0, 1, 1]
-        ]
+                if answer == 3:
+                    inputFile = open('geneticAlgorithm.txt', 'r')
+                    startMatrix = []
+                    for row in inputFile:
+                        row = [int(s.strip('\n')) for s in row.split(',')]
+                        startMatrix.append(row)
+                    if checkMatrix(startMatrix):
+                        raise Exception('Incorrect martix')
+
+                if answer == 4:
+                    startMatrix = [
+                        [1, 1, 1, 0, 1, 0],
+                        [1, 1, 1, 0, 1, 0],
+                        [1, 1, 1, 0, 1, 1],
+                        [0, 0, 0, 1, 1, 0],
+                        [1, 1, 1, 1, 1, 1],
+                        [0, 0, 1, 0, 1, 1]
+                    ]
+                answerIsCorrect = True
+            else:
+                print("Enter valid number")
+        except Exception as e:
+            print("Incorrect input, try again..", str(e))
     
     return startMatrix
 
 startMatrix = startMenu()
+
+print(startMatrix)
 
 def changeChar(s, p, r):
     return s[:p]+r+s[p+1:]
@@ -81,7 +128,7 @@ def findMaxFromPopulations(firstGroup, secondGroup):
 
     return [maxFirstName, maxSecondName]
 
-def crossingOver(parentsList):
+def crossingOver(globalCout, parentsList):
     firstBlockSize = random.randint(1, int(len(parentsList[0])/2))
     secondBlockSize = len(parentsList[0]) - firstBlockSize
 
@@ -90,8 +137,8 @@ def crossingOver(parentsList):
     secondFirstPart = parentsList[1][:firstBlockSize]
     secondSecondPart = parentsList[1][secondBlockSize:]
 
-    parentsList[0] = firstFirstPart + secondSecondPart
-    parentsList[1] = secondFirstPart + firstSecondPart
+    parentsList[0] = str(firstFirstPart) + str(secondSecondPart)
+    parentsList[1] = str(secondFirstPart) + str(firstSecondPart)
 
     return parentsList
 
@@ -113,10 +160,20 @@ matrixLen = len(startMatrix)
 
 populationList = []
 
-for i in range(16):
+whileCount = 0
+trueNumbers = 0
+while whileCount <= 16 and trueNumbers < 2:
     randomPopulation = getRandomPopulation(matrixLen)
+    onlyZero = True
+    for letter in randomPopulation:
+        if letter != '0':
+            onlyZero = False
+    if onlyZero:
+        continue
     if populationList.count(randomPopulation) == 0:
         populationList.append(randomPopulation)
+        if checkIfSatisfy(startMatrix, randomPopulation)[0] == True:
+            trueNumbers += 1
 
 bestSolution = ['', 0]
 
@@ -165,7 +222,7 @@ for globalCount in range(20):
     parentsList = findMaxFromPopulations(firstGroup, secondGroup)
 
     print("\nCandidates to parents:", parentsList)
-    descendantList = crossingOver(parentsList)
+    descendantList = crossingOver(globalCount, parentsList)
     print("After crossing over:", descendantList)
 
     for count, descendant in enumerate(descendantList, start = 0):
@@ -217,3 +274,7 @@ for globalCount in range(20):
             bestSolution[1] = countAnimals(populationItem)
 
     print("\nOn step", globalCount + 1,"the best is", bestSolution[0], "with", bestSolution[1], "animals")
+
+print("Start matrix: ")
+for row in startMatrix:
+    print(row)
