@@ -44,7 +44,7 @@ def startMenu():
                             startMatrix[j][i] = matrixValue
 
                 if answer == 3:
-                    inputFile = open('geneticAlgorithm.txt', 'r')
+                    inputFile = open('matrix.txt', 'r')
                     startMatrix = []
                     for row in inputFile:
                         row = [int(s.strip('\n')) for s in row.split(',')]
